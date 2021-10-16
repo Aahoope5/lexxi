@@ -209,10 +209,7 @@ int main()
      
 
 
-   if(isKeyword(buffy) == 1)
-   printf("%s is keyword\n", buffy);
-   else
-   printf("%s is indentifier\n", buffy);
+  
    }
 
     fclose(fpI);
