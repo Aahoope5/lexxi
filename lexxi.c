@@ -171,46 +171,53 @@ int new_line(char buffy[])
 
 int main()
 {
-    const char ws[7] = {'\t', '\n', ' ', '\f', '\r', '\t'};
 
     FILE *fpI;
     FILE *fpO;
 
-    char c,operators[] = "+-*/%=";
-    char buffy[15];
+    char c;
+    char buffy[11];
     int i, j = 0;
     int line = 1;
     int position = 1;
-    char *in = "grammar.txt";
+    char *in = "ab.txt";
     char *out = "lexemeTable.txt";
 
     fpI = fopen(in, "r");
     fpO = fopen(out, "a+");
     c = fgetc(fpI);
 
+    printf("\n%d : ", line);
+    const char ws[4] = {0x09, 0x0A, 0x0D, 0x0F};
+    // tab ,new line(line feed),return,shift in /page break
+
     while (c != EOF)
     {
-        c = fgetc(fpI);
 
-        for (i = 0; i < 6; ++i)
+        if (c == ws[1])
+
         {
-            if (c == operators[i])
-                printf("Line: %d Character: %d %c is operator\n",__LINE__, c);
+            line++;
+            printf("\n%d : ", line);
+            position = 1;
         }
+
+        else
+
+        {
+            if (c != ws[0] && c != ws[2] && c != ws[3])
+            {
+                printf("%d  ", position);
+                position++;
+            }
+            else
+            {
+                printf("-");
+            }
+        }
+
+        c = fgetc(fpI);
     }
-
-
-      if(isalnum(c)){
-   buffy[j++] = c;
-   }
-   else if((c == ' ' || c == '\n') && (j != 0)){
-   buffy[j] = '\0';
-   j = 0;
-     
-
-
-  
-   }
 
     fclose(fpI);
     fclose(fpO);
