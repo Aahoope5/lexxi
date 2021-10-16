@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
 int isKeyword(char buffy[])
 {
     int i;
@@ -138,36 +139,6 @@ int is_letter(char buffy[])
     }
     return f;
 }
-int is_ws(char buffy[])
-{
-    const char ws[4][15] = {{0x09}, {0x0A}, {0x0D}, {0x0F}};
-    int i;
-    int f = 0;
-    for (i = 0; i < 4; ++i)
-    {
-        if (strcmp(ws[i], buffy) == 0)
-        {
-            f = 1;
-            break;
-        }
-    }
-    return f;
-}
-int new_line(char buffy[])
-{
-    const char ws[4][15] = {{0x09}, {0x0A}, {0x0D}, {0x0F}};
-    int i;
-    int f = 0;
-    for (i = 0; i < 4; ++i)
-    {
-        if (strcmp(ws[i], buffy) == 0)
-        {
-            f = 1;
-            break;
-        }
-    }
-    return f;
-}
 
 int main()
 {
@@ -176,10 +147,13 @@ int main()
     FILE *fpO;
 
     char c;
-    char buffy[11];
+    char buffy[10];
+
     int i, j = 0;
     int line = 1;
     int position = 1;
+    char kind[2][4]= {{"ID"},{"Num"}};
+  
     char *in = "ab.txt";
     char *out = "lexemeTable.txt";
 
@@ -187,38 +161,56 @@ int main()
     fpO = fopen(out, "a+");
     c = fgetc(fpI);
 
-    printf("\n%d : ", line);
     const char ws[4] = {0x09, 0x0A, 0x0D, 0x0F};
-    // tab ,new line(line feed),return,shift in /page break
 
     while (c != EOF)
     {
+
+        if (isalnum(c))
+        {
+            buffy[j++] = c;
+        }
+        else if ((c == ' ' || c == '\n') && (j != 0))
+        {
+            buffy[j] = '\0';
+            j = 0;
+
+            if (isKeyword(buffy) == 1)
+            {
+                printf("line %d position %d:  %s is keyword\n", line, position, buffy);
+            
+         
+            } else if (isdigit(buffy[0]))
+            {
+                  printf("line %d position %d:  kind: %s Value: %s \n", line, position,kind[1], buffy);
+            } 
+            else
+                printf("line %d position %d:  kind: %s Value: %s \n", line, position,kind[0], buffy);
+        }
+
+
+
+
+
+
 
         if (c == ws[1])
 
         {
             line++;
-            printf("\n%d : ", line);
             position = 1;
         }
 
-        else
+        if (c != ws[1])
 
         {
-            if (c != ws[0] && c != ws[2] && c != ws[3])
-            {
-                printf("%d  ", position);
-                position++;
-            }
-            else
-            {
-                printf("-");
-            }
+
+            position++;
         }
 
         c = fgetc(fpI);
     }
-
+    printf("%s\n", buffy);
     fclose(fpI);
     fclose(fpO);
 
