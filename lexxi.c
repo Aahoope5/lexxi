@@ -109,35 +109,13 @@ int is_boolit(char buffy[])
     }
     return f;
 }
-int is_dgit(char buffy[])
+
+
+int fpeek(FILE * const fp,int i)
 {
-    const char dgit[10][2] = {{"0"}, {"1"}, {"2"}, {"3"}, {"4"}, {"5"}, {"6"}, {"7"}, {"8"}, {"9"}};
-    int i;
-    int f = 0;
-    for (i = 0; i < 10; ++i)
-    {
-        if (strcmp(dgit[i], buffy) == 0)
-        {
-            f = 1;
-            break;
-        }
-    }
-    return f;
-}
-int is_letter(char buffy[])
-{
-    const char letter[52][2] = {{"a"}, {"b"}, {"c"}, {"d"}, {"e"}, {"f"}, {"g"}, {"h"}, {"i"}, {"j"}, {"k"}, {"l"}, {"m"}, {"n"}, {"o"}, {"p"}, {"q"}, {"r"}, {"s"}, {"t"}, {"u"}, {"v"}, {"w"}, {"x"}, {"y"}, {"z"}, {"A"}, {"B"}, {"C"}, {"D"}, {"E"}, {"F"}, {"G"}, {"H"}, {"I"}, {"J"}, {"K"}, {"L"}, {"M"}, {"N"}, {"O"}, {"P"}, {"Q"}, {"R"}, {"S"}, {"T"}, {"U"}, {"V"}, {"W"}, {"X"}, {"Y"}, {"Z"}};
-    int i;
-    int f = 0;
-    for (i = 0; i < 52; ++i)
-    {
-        if (strcmp(letter[i], buffy) == 0)
-        {
-            f = 1;
-            break;
-        }
-    }
-    return f;
+    fseek(fp,i,SEEK_SET);
+  const int ch = getc(fp);
+  return ch == EOF ? EOF : ungetc(ch, fp);
 }
 
 int main()
@@ -152,7 +130,7 @@ int main()
     int i, j = 0;
     int line = 1;
     int position = 1;
-    char kind[2][4]= {{"ID"},{"Num"}};
+    char kind[2][4]= {{"ID"},{"NUM"}};
   
     char *in = "ab.txt";
     char *out = "lexemeTable.txt";
@@ -170,7 +148,7 @@ int main()
         {
             buffy[j++] = c;
         }
-        else if ((c == ' ' || c == '\n') && (j != 0))
+        else if (c == ' ' || c == '\n' && (j != 0))
         {
             buffy[j] = '\0';
             j = 0;
@@ -178,14 +156,49 @@ int main()
             if (isKeyword(buffy) == 1)
             {
                 printf("line %d position %d:  %s is keyword\n", line, position, buffy);
-            
+              memset(buffy,0,strlen(buffy));
          
             } else if (isdigit(buffy[0]))
             {
                   printf("line %d position %d:  kind: %s Value: %s \n", line, position,kind[1], buffy);
+                    memset(buffy,0,strlen(buffy));
+            } else if (isalpha(buffy[0]))
+            {
+                  printf("line %d position %d:  kind: %s Value: %s \n", line, position,kind[0], buffy);
+                    memset(buffy,0,strlen(buffy));
+            } 
+        }
+       
+         
+         if (ispunct(c))
+        {
+            buffy[j++] = c;
+        }
+        else if ((c == ' ' || c == '\n') && (j != 0))
+        {
+            buffy[j] = '\0';
+            j = 0;
+
+            if (is_relops(buffy) == 1)
+            {
+                printf("line %d position %d:  kind: %s \n", line, position, buffy);
+            
+         
+            } else if (is_addops(buffy))
+            {
+                  printf("line %d position %d:  kind: %s \n", line, position,buffy);
+            } else if (is_mult(buffy))
+            {
+                  printf("line %d position %d:  kind: %s  \n", line, position, buffy);
+            } else if (is_factor(buffy))
+            {
+                  printf("line %d position %d:  kind: %s  \n", line, position,buffy);
+            } else if (is_unops(buffy))
+            {
+                  printf("line %d position %d:  kind: %s \n", line, position,buffy);
             } 
             else
-                printf("line %d position %d:  kind: %s Value: %s \n", line, position,kind[0], buffy);
+                printf(" kind: %s is not recognized  \n", line, position, buffy);
         }
 
 
@@ -209,7 +222,9 @@ int main()
         }
 
         c = fgetc(fpI);
+       
     }
+
     printf("%s\n", buffy);
     fclose(fpI);
     fclose(fpO);
