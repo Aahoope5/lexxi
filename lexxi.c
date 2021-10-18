@@ -114,22 +114,41 @@ char check_next(FILE *const fp, char *next, char *ch)
 {
     char innext;
     char inch;
-   
-    
+
     fseek(fp, -1L, SEEK_CUR);
     fseek(fp, -0L, SEEK_CUR);
-   *next = getc(fp);
-    innext= *next;
-  
+    *next = getc(fp);
+    innext = *next;
+
     //  printf("next Char is %c  \n", innext);
-    fseek(fp, -2L, SEEK_CUR);
+    fseek(fp, -1L, SEEK_CUR);
     fseek(fp, -0L, SEEK_CUR);
     // printf("%d current position \n", ftell(fp)) ;
-    *ch= getc(fp);
-    inch=*ch;
+    *ch = getc(fp);
+    inch = *ch;
     // printf("current Char is %c  \n", inch);
     return innext;
 }
+
+// int comments(char inbuffy[], char inc)
+// {
+//     int j = 0;
+//     if (ispunct(inc))
+//     {
+//         inbuffy[j++] = inc;
+//     }
+//     else if (!ispunct(inc) && (j != 0))
+//     {
+//         inbuffy[j] = '\0';
+//         j = 0;
+//         if (inbuffy[0] == '/' && inbuffy[1] == '/')
+//         {
+//             return 1;
+//             printf("%s  comented out\n", inbuffy);
+//         }
+//     }
+//     return 0;
+// }
 
 int main()
 {
@@ -137,8 +156,8 @@ int main()
     FILE *fpI;
     FILE *fpO;
 
-    char c,n;
- 
+    char c, n;
+
     char buffy[10];
 
     int i, j = 0;
@@ -156,70 +175,101 @@ int main()
     const char ws[4] = {0x09, 0x0A, 0x0D, 0x0F};
 
     while (c != EOF)
+
     {
 
-       
+        if (c == '/' && check_next(fpI, &n, &c) == '/')
+        {
 
-        if (isalnum(c))
+            while (c != '\n')
+            {
+                c = fgetc(fpI);
+            }
+        }
+
+        // if (c == ':' && check_next(fpI, &n, &c) == '=')
+        // {
+        //    check_next(fpI, &n, &c);
+        //         printf("%c\n ", n);
+         
+        // }
+
+        if (isalnum(c) && !ispunct(c))
         {
             buffy[j++] = c;
         }
-        else if (c == ' ' || c == '\n'|| ispunct(c) && (j != 0))
+        else if (c == ' ' || c == '\n' || ispunct(c) && (j != 0))
         {
             buffy[j] = '\0';
             j = 0;
 
             if (isKeyword(buffy) == 1)
             {
-                printf("line %d position %d:  %s is keyword\n", line, position - strlen(buffy), buffy);
-                check_next(fpI,&n,&c);
-                printf("%c\n ",n);
-                
+                printf("line %d position %d:  Keyword %s \n", line, position - strlen(buffy), buffy);
+                check_next(fpI, &n, &c);
+                printf("%c\n ", n);
+
                 memset(buffy, 0, strlen(buffy));
             }
             else if (isdigit(buffy[0]))
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
-                printf("%c\n ",check_next(fpI,&n,&c));
+                check_next(fpI, &n, &c);
+                printf("%c\n ", n);
                 memset(buffy, 0, strlen(buffy));
             }
             else if (isalpha(buffy[0]))
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[0], buffy);
-               printf("%c\n ",check_next(fpI,&n,&c));
+                check_next(fpI, &n, &c);
+                printf("%c\n ", n);
+                memset(buffy, 0, strlen(buffy));
+            }
+            else if (isalpha(buffy[0]))
+            {
+                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[0], buffy);
+                check_next(fpI, &n, &c);
+                printf("%c\n ", n);
                 memset(buffy, 0, strlen(buffy));
             }
         }
 
-        //  if (ispunct(c))
-        // {
-        //     buffy[j++] = c;
-        // }
-        // else if ((c == ' ' || c == '\n') && (j != 0))
-        // {
-        //     buffy[j] = '\0';
-        //     j = 0;
+        if (ispunct(c))
+        {
+            buffy[j++] = c;
+        }
+        else if ((c == ' ' || c == '\n') && (j != 0))
+        {
+            buffy[j] = '\0';
+            j = 0;
 
-        //     if (is_relops(buffy) == 1)
-        //     {
-        //         printf("line %d position %d:  kind: %s \n", line, position, buffy);
-
-        //     } else if (is_addops(buffy))
-        //     {
-        //           printf("line %d position %d:  kind: %s \n", line, position,buffy);
-        //     } else if (is_mult(buffy))
-        //     {
-        //           printf("line %d position %d:  kind: %s  \n", line, position, buffy);
-        //     } else if (is_factor(buffy))
-        //     {
-        //           printf("line %d position %d:  kind: %s  \n", line, position,buffy);
-        //     } else if (is_unops(buffy))
-        //     {
-        //           printf("line %d position %d:  kind: %s \n", line, position,buffy);
-        //     }
-        //     else
-        //         printf(" kind: %s is not recognized  \n", line, position, buffy);
-        // }
+            if (is_relops(buffy) == 1)
+            {
+                printf("line %d position %d:  kind: %s \n", line, position, buffy);
+            }
+            else if (is_addops(buffy) == 1)
+            {
+                printf("line %d position %d:  kind: %s \n", line, position, buffy);
+            }
+            else if (is_mult(buffy) == 1)
+            {
+                printf("line %d position %d:  kind: %s  \n", line, position, buffy);
+            }
+            else if (is_factor(buffy) == 1)
+            {
+                printf("line %d position %d:  kind: %s  \n", line, position, buffy);
+            }
+            else if (is_unops(buffy) == 1)
+            {
+                printf("line %d position %d:  kind: %s \n", line, position, buffy);
+            }
+            else if (isKeyword(buffy) == 1)
+            {
+                printf("line %d position %d:  kind: %s \n", line, position, buffy);
+            }
+            else
+                printf(" kind: %s is not recognized  \n", line, position, buffy);
+        }
 
         if (c == ws[1])
 
@@ -238,7 +288,7 @@ int main()
         c = fgetc(fpI);
     }
 
-    // printf("%s\n", buffy);
+    printf("%s\n", buffy);
     fclose(fpI);
     fclose(fpO);
 
