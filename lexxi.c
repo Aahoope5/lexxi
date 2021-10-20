@@ -6,105 +6,13 @@ int isKeyword(char buffy[])
 {
     int i;
     int f = 0;
-    const char keywords[15][9] = {{"program"}, {":"}, {"end"}, {"bool"}, {"int"}, {";"}, {":="}, {"if"}, {"then"}, {"else"}, {"fi"}, {"while"}, {"do"}, {"od"}, {"print"}};
-    for (i = 0; i < 15; ++i)
+    const char keywords[32][9] = {{"program"}, {"end"}, {"bool"}, {"int"}, {"if"}, {"then"}, {"else"}, {"fi"}, {"while"}, {"do"}, {"od"}, {"print"}, {":"}, {";"}, {":="}, {"<"}, {"=<"}, {"="}, {"!="}, {">"}, {"+"}, {"-"}, {"or"}, {"*"}, {"/"}, {"and"}, {"("}, {")"}, {"-"}, {"not"}, {"fasle"}, {"true"}};
+
+    for (i = 0; i < 32; ++i)
     {
         if (strcmp(keywords[i], buffy) == 0)
         {
             f = 1;
-            break;
-        }
-    }
-    return f;
-}
-int is_relops(char buffy[])
-{
-    const char relops[5][3] = {"<", "=<", "=", "!=", ">"};
-    int i;
-    int f = 0;
-    for (i = 0; i < 5; ++i)
-
-    {
-        if (strcmp(relops[i], buffy) == 0)
-        {
-            f = 1;
-
-            break;
-        }
-    }
-    return f;
-}
-int is_addops(char buffy[])
-{
-    const char addops[3][3] = {"+", "-", "or"};
-    int i;
-    int f = 0;
-    for (i = 0; i < 3; ++i)
-    {
-        if (strcmp(addops[i], buffy) == 0)
-        {
-            f = 1;
-            break;
-        }
-    }
-    return f;
-}
-int is_mult(char buffy[])
-{
-    const char mult[3][4] = {"*", "/", "and"};
-    int i;
-    int f = 0;
-    for (i = 0; i < 3; ++i)
-    {
-        if (strcmp(mult[i], buffy) == 0)
-        {
-            f = 1;
-            break;
-        }
-    }
-    return f;
-}
-int is_factor(char buffy[])
-{
-    const char factor[2][2] = {"(", ")"};
-    int i;
-    int f = 0;
-    for (i = 0; i < 2; ++i)
-    {
-        if (strcmp(factor[i], buffy) == 0)
-        {
-            f = 1;
-            break;
-        }
-    }
-    return f;
-}
-int is_unops(char buffy[])
-{
-    const char unops[2][4] = {"-", "not"};
-    int i;
-    int f = 0;
-    for (i = 0; i < 2; ++i)
-    {
-        if (strcmp(unops[i], buffy) == 0)
-        {
-            f = 1;
-            break;
-        }
-    }
-    return f;
-}
-int is_boolit(char buffy[])
-{
-    const char boolit[2][6] = {"fasle", "true"};
-    int i;
-    int f = 0;
-    for (i = 0; i < 2; ++i)
-    {
-        if (strcmp(boolit[i], buffy) == 0)
-        {
-            f = 1;
-            break;
         }
     }
     return f;
@@ -115,40 +23,14 @@ char check_next(FILE *const fp, char *next, char *ch)
     char innext;
     char inch;
 
-    fseek(fp, -1L, SEEK_CUR);
     fseek(fp, -0L, SEEK_CUR);
     *next = getc(fp);
     innext = *next;
-
-    //  printf("next Char is %c  \n", innext);
     fseek(fp, -1L, SEEK_CUR);
     fseek(fp, -0L, SEEK_CUR);
-    // printf("%d current position \n", ftell(fp)) ;
-    *ch = getc(fp);
-    inch = *ch;
-    // printf("current Char is %c  \n", inch);
+
     return innext;
 }
-
-// int comments(char inbuffy[], char inc)
-// {
-//     int j = 0;
-//     if (ispunct(inc))
-//     {
-//         inbuffy[j++] = inc;
-//     }
-//     else if (!ispunct(inc) && (j != 0))
-//     {
-//         inbuffy[j] = '\0';
-//         j = 0;
-//         if (inbuffy[0] == '/' && inbuffy[1] == '/')
-//         {
-//             return 1;
-//             printf("%s  comented out\n", inbuffy);
-//         }
-//     }
-//     return 0;
-// }
 
 int main()
 {
@@ -165,7 +47,7 @@ int main()
     int position = 1;
     char kind[2][4] = {{"ID"}, {"NUM"}};
 
-    char *in = "ab.txt";
+    char *in = "ex/euclid.txt";
     char *out = "lexemeTable.txt";
 
     fpI = fopen(in, "rb+");
@@ -173,11 +55,30 @@ int main()
     c = fgetc(fpI);
 
     const char ws[4] = {0x09, 0x0A, 0x0D, 0x0F};
+    const char digit[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     while (c != EOF)
 
     {
+        for (i = 0; i < 10; i++)
+        {
+            if (isdigit(c))
+            {
+                   buffy[j++];
+                   c = fgetc(fpI);
+            }else
+            break;
+        }
+        buffy[j] = '\0';
+        j = 0;
+        if (sizeof(buffy) >= 0){
 
+        
+            printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+            memset(buffy, 0, strlen(buffy));
+            fseek(fpI, -1L, SEEK_CUR);
+            fseek(fpI, -0L, SEEK_CUR);
+        }
         if (c == '/' && check_next(fpI, &n, &c) == '/')
         {
 
@@ -187,88 +88,117 @@ int main()
             }
         }
 
-        // if (c == ':' && check_next(fpI, &n, &c) == '=')
-        // {
-        //    check_next(fpI, &n, &c);
-        //         printf("%c\n ", n);
-         
-        // }
+        if (c == ':' && (check_next(fpI, &n, &c) == '='))
+        {
+            buffy[0] = c;
+            buffy[1] = fgetc(fpI);
+            buffy[2] = '\0';
+            j = 0;
 
-        if (isalnum(c) && !ispunct(c))
+            if (isKeyword(buffy) == 1)
+            {
+                printf("line %d position %d:  Keyword %s \n", line, position - strlen(buffy), buffy);
+                memset(buffy, 0, strlen(buffy));
+                fseek(fpI, -1L, SEEK_CUR);
+                fseek(fpI, -0L, SEEK_CUR);
+            }
+        }
+
+        if (c == '!' && (check_next(fpI, &n, &c) == '='))
+        {
+            buffy[0] = c;
+            buffy[1] = fgetc(fpI);
+            buffy[2] = '\0';
+            j = 0;
+
+            if (isKeyword(buffy) == 1)
+            {
+                printf("line %d position %d:  Keyword %s \n", line, position - strlen(buffy), buffy);
+                memset(buffy, 0, strlen(buffy));
+                fseek(fpI, -1L, SEEK_CUR);
+                fseek(fpI, -0L, SEEK_CUR);
+            }
+        }
+
+        if (c == '<' && (check_next(fpI, &n, &c) == '='))
+        {
+            buffy[0] = c;
+            buffy[1] = fgetc(fpI);
+            buffy[2] = '\0';
+            j = 0;
+
+            if (isKeyword(buffy) == 1)
+            {
+                printf("line %d position %d:  Keyword %s \n", line, position - strlen(buffy), buffy);
+                memset(buffy, 0, strlen(buffy));
+                fseek(fpI, -1L, SEEK_CUR);
+                fseek(fpI, -0L, SEEK_CUR);
+            }
+        }
+
+        if (c == '>' && (check_next(fpI, &n, &c) == '='))
+        {
+            buffy[0] = c;
+            buffy[1] = fgetc(fpI);
+            buffy[2] = '\0';
+            j = 0;
+
+            if (isKeyword(buffy) == 1)
+            {
+                printf("line %d position %d:  Keyword %s \n", line, position - strlen(buffy), buffy);
+                memset(buffy, 0, strlen(buffy));
+                fseek(fpI, -1L, SEEK_CUR);
+                fseek(fpI, -0L, SEEK_CUR);
+            }
+        }
+
+        //   if (isdigit(c) )
+        //     {
+
+        //         buffy[j++] =c;
+
+        //         printf("In %c \n", c);
+        //     }else if(!isdigit(c))
+
+        //     {
+
+        //         buffy[j] = '\0';
+        //         j = 0;
+
+        //              printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+        //              memset(buffy, 0, strlen(buffy));
+        //             fseek(fpI, -1L, SEEK_CUR);
+        //             fseek(fpI, -0L, SEEK_CUR);
+
+        //     }
+
+        if ((!iscntrl(c)) && (!isblank(c)) && (!ispunct(c)))
         {
             buffy[j++] = c;
         }
-        else if (c == ' ' || c == '\n' || ispunct(c) && (j != 0))
+        else if ((isblank(c) || c == '\n' || ispunct(c)) && (j != 0))
         {
             buffy[j] = '\0';
             j = 0;
 
             if (isKeyword(buffy) == 1)
             {
-                printf("line %d position %d:  Keyword %s \n", line, position - strlen(buffy), buffy);
-                check_next(fpI, &n, &c);
-                printf("%c\n ", n);
+                printf("line %d position %d: kind: %s \n", line, position - strlen(buffy), buffy);
 
                 memset(buffy, 0, strlen(buffy));
             }
             else if (isdigit(buffy[0]))
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
-                check_next(fpI, &n, &c);
-                printf("%c\n ", n);
+
                 memset(buffy, 0, strlen(buffy));
             }
             else if (isalpha(buffy[0]))
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[0], buffy);
-                check_next(fpI, &n, &c);
-                printf("%c\n ", n);
+
                 memset(buffy, 0, strlen(buffy));
             }
-            else if (isalpha(buffy[0]))
-            {
-                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[0], buffy);
-                check_next(fpI, &n, &c);
-                printf("%c\n ", n);
-                memset(buffy, 0, strlen(buffy));
-            }
-        }
-
-        if (ispunct(c))
-        {
-            buffy[j++] = c;
-        }
-        else if ((c == ' ' || c == '\n') && (j != 0))
-        {
-            buffy[j] = '\0';
-            j = 0;
-
-            if (is_relops(buffy) == 1)
-            {
-                printf("line %d position %d:  kind: %s \n", line, position, buffy);
-            }
-            else if (is_addops(buffy) == 1)
-            {
-                printf("line %d position %d:  kind: %s \n", line, position, buffy);
-            }
-            else if (is_mult(buffy) == 1)
-            {
-                printf("line %d position %d:  kind: %s  \n", line, position, buffy);
-            }
-            else if (is_factor(buffy) == 1)
-            {
-                printf("line %d position %d:  kind: %s  \n", line, position, buffy);
-            }
-            else if (is_unops(buffy) == 1)
-            {
-                printf("line %d position %d:  kind: %s \n", line, position, buffy);
-            }
-            else if (isKeyword(buffy) == 1)
-            {
-                printf("line %d position %d:  kind: %s \n", line, position, buffy);
-            }
-            else
-                printf(" kind: %s is not recognized  \n", line, position, buffy);
         }
 
         if (c == ws[1])
