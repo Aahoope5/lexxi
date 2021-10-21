@@ -35,22 +35,21 @@ char check_next(FILE *const fp, char *next, char *ch)
 void lex_on_em(FILE *fp)
 {
 
-   
     const char ws[4] = {0x09, 0x0A, 0x0D, 0x0F};
-  
-     char c, n,buffy[9];
-    int i, j = 0,line = 1,position = 1;
-   
+
+    char c, n, buffy[9];
+    int i, j = 0, line = 1, position = 1;
+
     char kind[2][4] = {{"ID"}, {"NUM"}};
     FILE *fpO;
     char *out = "lexemeTable.txt";
+
     fpO = fopen(out, "a+");
     c = fgetc(fp);
 
     while (c != EOF)
-
     {
-
+        // check comments
         if (c == '/' && check_next(fp, &n, &c) == '/')
         {
             while (c != '\n')
@@ -58,66 +57,73 @@ void lex_on_em(FILE *fp)
                 c = fgetc(fp);
             }
         }
-
+        // check speciall combo
         if (c == ':' && check_next(fp, &n, &c) == '=')
         {
             buffy[0] = c;
             buffy[1] = fgetc(fp);
             buffy[2] = '\0';
             j = 0;
-
+            position++;
             if (isKeyword(buffy) == 1)
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
                 c = fgetc(fp);
+                position++;
             }
         }
-
+        // check speciall combo
         if (c == '!' && (check_next(fp, &n, &c) == '='))
         {
             buffy[0] = c;
             buffy[1] = fgetc(fp);
             buffy[2] = '\0';
             j = 0;
-
+            position++;
             if (isKeyword(buffy) == 1)
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
                 c = fgetc(fp);
+                position++;
             }
         }
+        // check speciall combo
         if (c == '>' && (check_next(fp, &n, &c) == '='))
         {
             buffy[0] = c;
             buffy[1] = fgetc(fp);
             buffy[2] = '\0';
             j = 0;
-
+            position++;
             if (isKeyword(buffy) == 1)
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
                 c = fgetc(fp);
+                position++;
             }
         }
+        // check speciall combo
         if (c == '<' && (check_next(fp, &n, &c) == '='))
         {
             buffy[0] = c;
             buffy[1] = fgetc(fp);
             buffy[2] = '\0';
             j = 0;
+            position++;
 
             if (isKeyword(buffy) == 1)
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
                 c = fgetc(fp);
+                position++;
             }
         }
-
+        // start with letters add punctiuaton and starting digits later
         if (isalpha(c))
         {
             buffy[j++] = c;
         }
-        else if ((isblank(c) || c == '\n' || c == ':' || c == '(' || c == ';' || c == ')' || c == '*' || c == '=' || c == '+' || c == '_' || c == '-' || c == '/' || c == '_') && (j != 0))
+        else if ((isblank(c) || c == '\n' || c == ':' || c == '(' || c == ';' || c == ')' || c == '*' || c == '=' || c == '+' || c == '_' || c == '-' || c == '/' || c == '_' || ispunct(c)) && (j != 0))
         {
             buffy[j] = '\0';
             j = 0;
@@ -135,46 +141,42 @@ void lex_on_em(FILE *fp)
             else if (isalpha(buffy[0]))
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[0], buffy);
-
                 memset(buffy, 0, strlen(buffy));
             }
+            // not recognized
             else if (!isblank(c) && !isalnum(c) && !isdigit(c) && !isalpha(c))
             {
                 if (isKeyword(buffy) == 0)
                 {
-                    printf("Not recognized! line %d: position %d:   %s \n", buffy);
-
+                    printf("Not recognized! line %d: position %d:   %s \n", line, position, buffy);
                     memset(buffy, 0, strlen(buffy));
                 }
             }
         }
-
+        // start taking punctuation
         if (ispunct(c))
         {
             buffy[j++] = c;
         }
-
+        // start taking digits
         if (isdigit(c))
         {
             buffy[j++] = c;
         }
 
-        // lines and position
-
+        // start tracking white space and new lines
         if (c == ws[1])
-
         {
             line++;
             position = 1;
         }
 
         if (c != ws[1])
-
         {
-
             position++;
         }
 
+        // progress pointer
         c = fgetc(fp);
     }
 
@@ -188,10 +190,10 @@ void lex_on_em(FILE *fp)
 int main()
 {
 
-    FILE *fpI;
-
     char *in = "ex/nonsense.txt";
-    // char *in = "ex/euclid.txt";
+    //  char *in = "ex/euclid.txt";
+
+    FILE *fpI;
     fpI = fopen(in, "rb+");
 
     lex_on_em(fpI);
