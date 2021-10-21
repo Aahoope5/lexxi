@@ -47,10 +47,12 @@ int main()
     int position = 1;
     char kind[2][4] = {{"ID"}, {"NUM"}};
 
-    char *in = "ex/nonsense.txt";
+    char *in = "ex/euclid.txt";
     char *out = "lexemeTable.txt";
 
-    fpI = fopen(in, "rb+");
+    fpI = fopen(in, "rb+");   
+
+    
     fpO = fopen(out, "a+");
     c = fgetc(fpI);
 
@@ -130,7 +132,7 @@ int main()
             }
         }
 
-        // lines and position
+        // lines and position  
 
         if (c == ws[1])
 
