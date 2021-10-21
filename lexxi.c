@@ -32,12 +32,10 @@ char check_next(FILE *const fp, char *next, char *ch)
     return innext;
 }
 
-
-
-void lex_on_em( FILE *fpI){
-return;
+void lex_on_em(FILE *fpI)
+{
+    return;
 }
-
 
 int main()
 {
@@ -54,12 +52,11 @@ int main()
     int position = 1;
     char kind[2][4] = {{"ID"}, {"NUM"}};
 
-    //char *in = "ex/nonsense.txt";
-    char *in = "ex/euclid.txt";
+    char *in = "ex/nonsense.txt";
+    // char *in = "ex/euclid.txt";
     char *out = "lexemeTable.txt";
 
-    fpI = fopen(in, "rb+");   
-
+    fpI = fopen(in, "rb+");
 
     fpO = fopen(out, "a+");
     c = fgetc(fpI);
@@ -72,22 +69,58 @@ int main()
 
         if (c == '/' && check_next(fpI, &n, &c) == '/')
         {
-
             while (c != '\n')
             {
                 c = fgetc(fpI);
             }
         }
 
+         if (c == ':' && check_next(fpI, &n, &c) == '=')
+        {
+            buffy[0] = c;
+            buffy[1] = fgetc(fpI);
+            buffy[2] = '\0';
+            j = 0;
+
+            if (isKeyword(buffy) == 1)
+            {
+                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+            c = fgetc(fpI);
+            }
+
+        }
+
+        if (c == '!' && (check_next(fpI, &n, &c) == '='))
+        {
+            buffy[0] = c;
+            buffy[1] = fgetc(fpI);
+            buffy[2] = '\0';
+            j = 0;
+
+            if (isKeyword(buffy) == 1)
+            {
+                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+             
+            }
+        }
 
 
-        
+
+
+
+
+
+
+
+
+
+
 
         if (isalpha(c))
         {
             buffy[j++] = c;
         }
-        else if ((isblank(c) || c == '\n' || c == ':'|| c == '('|| c == ';' || c == ')') && (j != 0))
+        else if ((isblank(c) || c == '\n' || c == ':' || c == '(' || c == ';' || c == ')' || c == '=' || c == '+' || c == '_') && (j != 0))
         {
             buffy[j] = '\0';
             j = 0;
@@ -108,7 +141,15 @@ int main()
 
                 memset(buffy, 0, strlen(buffy));
             }
-            
+            else if (!isblank(c) && !isalnum(c) && !isdigit(c) && !isalpha(c))
+            {
+                if (isKeyword(buffy) == 0)
+                {
+                    printf("Not recognized! line %d: position %d:   %s \n", buffy);
+
+                    memset(buffy, 0, strlen(buffy));
+                }
+            }
         }
 
         if (ispunct(c))
@@ -116,14 +157,12 @@ int main()
             buffy[j++] = c;
         }
 
-
         if (isdigit(c))
         {
             buffy[j++] = c;
         }
 
-
-        // lines and position  
+        // lines and position
 
         if (c == ws[1])
 
