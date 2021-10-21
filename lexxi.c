@@ -47,7 +47,7 @@ int main()
     int position = 1;
     char kind[2][4] = {{"ID"}, {"NUM"}};
 
-    char *in = "ex/euclid.txt";
+    char *in = "ex/nonsense.txt";
     char *out = "lexemeTable.txt";
 
     fpI = fopen(in, "rb+");
@@ -55,30 +55,11 @@ int main()
     c = fgetc(fpI);
 
     const char ws[4] = {0x09, 0x0A, 0x0D, 0x0F};
-    const char digit[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     while (c != EOF)
 
     {
-        for (i = 0; i < 10; i++)
-        {
-            if (isdigit(c))
-            {
-                   buffy[j++];
-                   c = fgetc(fpI);
-            }else
-            break;
-        }
-        buffy[j] = '\0';
-        j = 0;
-        if (sizeof(buffy) >= 0){
 
-        
-            printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
-            memset(buffy, 0, strlen(buffy));
-            fseek(fpI, -1L, SEEK_CUR);
-            fseek(fpI, -0L, SEEK_CUR);
-        }
         if (c == '/' && check_next(fpI, &n, &c) == '/')
         {
 
@@ -88,95 +69,11 @@ int main()
             }
         }
 
-        if (c == ':' && (check_next(fpI, &n, &c) == '='))
-        {
-            buffy[0] = c;
-            buffy[1] = fgetc(fpI);
-            buffy[2] = '\0';
-            j = 0;
-
-            if (isKeyword(buffy) == 1)
-            {
-                printf("line %d position %d:  Keyword %s \n", line, position - strlen(buffy), buffy);
-                memset(buffy, 0, strlen(buffy));
-                fseek(fpI, -1L, SEEK_CUR);
-                fseek(fpI, -0L, SEEK_CUR);
-            }
-        }
-
-        if (c == '!' && (check_next(fpI, &n, &c) == '='))
-        {
-            buffy[0] = c;
-            buffy[1] = fgetc(fpI);
-            buffy[2] = '\0';
-            j = 0;
-
-            if (isKeyword(buffy) == 1)
-            {
-                printf("line %d position %d:  Keyword %s \n", line, position - strlen(buffy), buffy);
-                memset(buffy, 0, strlen(buffy));
-                fseek(fpI, -1L, SEEK_CUR);
-                fseek(fpI, -0L, SEEK_CUR);
-            }
-        }
-
-        if (c == '<' && (check_next(fpI, &n, &c) == '='))
-        {
-            buffy[0] = c;
-            buffy[1] = fgetc(fpI);
-            buffy[2] = '\0';
-            j = 0;
-
-            if (isKeyword(buffy) == 1)
-            {
-                printf("line %d position %d:  Keyword %s \n", line, position - strlen(buffy), buffy);
-                memset(buffy, 0, strlen(buffy));
-                fseek(fpI, -1L, SEEK_CUR);
-                fseek(fpI, -0L, SEEK_CUR);
-            }
-        }
-
-        if (c == '>' && (check_next(fpI, &n, &c) == '='))
-        {
-            buffy[0] = c;
-            buffy[1] = fgetc(fpI);
-            buffy[2] = '\0';
-            j = 0;
-
-            if (isKeyword(buffy) == 1)
-            {
-                printf("line %d position %d:  Keyword %s \n", line, position - strlen(buffy), buffy);
-                memset(buffy, 0, strlen(buffy));
-                fseek(fpI, -1L, SEEK_CUR);
-                fseek(fpI, -0L, SEEK_CUR);
-            }
-        }
-
-        //   if (isdigit(c) )
-        //     {
-
-        //         buffy[j++] =c;
-
-        //         printf("In %c \n", c);
-        //     }else if(!isdigit(c))
-
-        //     {
-
-        //         buffy[j] = '\0';
-        //         j = 0;
-
-        //              printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
-        //              memset(buffy, 0, strlen(buffy));
-        //             fseek(fpI, -1L, SEEK_CUR);
-        //             fseek(fpI, -0L, SEEK_CUR);
-
-        //     }
-
-        if ((!iscntrl(c)) && (!isblank(c)) && (!ispunct(c)))
+        if (isalpha(c))
         {
             buffy[j++] = c;
         }
-        else if ((isblank(c) || c == '\n' || ispunct(c)) && (j != 0))
+        else if ((isblank(c) || c == '\n' || c == ':'|| c == '('|| c == ';' || c == ')') && (j != 0))
         {
             buffy[j] = '\0';
             j = 0;
@@ -184,13 +81,11 @@ int main()
             if (isKeyword(buffy) == 1)
             {
                 printf("line %d position %d: kind: %s \n", line, position - strlen(buffy), buffy);
-
                 memset(buffy, 0, strlen(buffy));
             }
             else if (isdigit(buffy[0]))
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
-
                 memset(buffy, 0, strlen(buffy));
             }
             else if (isalpha(buffy[0]))
@@ -199,7 +94,43 @@ int main()
 
                 memset(buffy, 0, strlen(buffy));
             }
+            
         }
+
+        if (ispunct(c))
+        {
+            buffy[j++] = c;
+        }
+        else if ((isblank(c) || c == '\n') && (j != 0))
+        {
+            buffy[j] = '\0';
+            j = 0;
+
+            if (isKeyword(buffy) == 1)
+            {
+                printf("line %d position %d: kind: %s \n", line, position - strlen(buffy), buffy);
+                memset(buffy, 0, strlen(buffy));
+            }
+           
+        }
+
+        if (isdigit(c))
+        {
+            buffy[j++] = c;
+        }
+        else if ((isblank(c) || c == '\n') && (j != 0))
+        {
+            buffy[j] = '\0';
+            j = 0;
+
+            if (isdigit(buffy[0]))
+            {
+                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+                memset(buffy, 0, strlen(buffy));
+            }
+        }
+
+        // lines and position
 
         if (c == ws[1])
 
