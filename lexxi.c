@@ -32,12 +32,29 @@ char check_next(FILE *const fp, char *next, char *ch)
     return innext;
 }
 
+// check comments
+int iscommie(char buffy[])
+{
+    int i;
+    int f = 0;
+
+    for (i = 0; i < 2; ++i)
+    {
+        if (buffy[i] == '/' && buffy[i + 1] == '/')
+        {
+            f = 1;
+        }
+    }
+    return f;
+}
+
 void lex_on_em(FILE *fp)
 {
 
     const char ws[4] = {0x09, 0x0A, 0x0D, 0x0F};
 
     char c, n, buffy[9];
+    char out_buffy[11];
     int i, j = 0, line = 1, position = 1;
 
     char kind[2][4] = {{"ID"}, {"NUM"}};
@@ -57,7 +74,7 @@ void lex_on_em(FILE *fp)
                 c = fgetc(fp);
             }
         }
-        // check speciall combo
+
         if (c == ':' && check_next(fp, &n, &c) == '=')
         {
             buffy[0] = c;
@@ -67,7 +84,9 @@ void lex_on_em(FILE *fp)
             position++;
             if (isKeyword(buffy) == 1)
             {
-                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+
+                printf("%d:%d:%s\n", line, position - strlen(buffy), buffy);
+
                 c = fgetc(fp);
                 position++;
             }
@@ -82,7 +101,7 @@ void lex_on_em(FILE *fp)
             position++;
             if (isKeyword(buffy) == 1)
             {
-                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+                printf("%d:%d:%s\n", line, position - strlen(buffy), buffy);
                 c = fgetc(fp);
                 position++;
             }
@@ -97,7 +116,7 @@ void lex_on_em(FILE *fp)
             position++;
             if (isKeyword(buffy) == 1)
             {
-                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+                printf("%d:%d:%s\n", line, position - strlen(buffy), buffy);
                 c = fgetc(fp);
                 position++;
             }
@@ -113,7 +132,7 @@ void lex_on_em(FILE *fp)
 
             if (isKeyword(buffy) == 1)
             {
-                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+                printf("%d:%d:%s\n", line, position - strlen(buffy), buffy);
                 c = fgetc(fp);
                 position++;
             }
@@ -130,17 +149,17 @@ void lex_on_em(FILE *fp)
 
             if (isKeyword(buffy) == 1)
             {
-                printf("line %d position %d: kind: %s \n", line, position - strlen(buffy), buffy);
+                printf("%d:%d:%s\n", line, position - strlen(buffy), buffy);
                 memset(buffy, 0, strlen(buffy));
             }
             else if (isdigit(buffy[0]))
             {
-                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+                printf("%d:%d:%s:%s\n", line, position - strlen(buffy), kind[1], buffy);
                 memset(buffy, 0, strlen(buffy));
             }
             else if (isalpha(buffy[0]))
             {
-                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[0], buffy);
+                printf("%d:%d:%s:%s\n", line, position - strlen(buffy), kind[0], buffy);
                 memset(buffy, 0, strlen(buffy));
             }
             // not recognized
@@ -190,8 +209,8 @@ void lex_on_em(FILE *fp)
 int main()
 {
 
-    char *in = "ex/nonsense.txt";
-    //  char *in = "ex/euclid.txt";
+    // char *in = "ex/nonsense.txt";
+    char *in = "ex/euclid.txt";
 
     FILE *fpI;
     fpI = fopen(in, "rb+");
