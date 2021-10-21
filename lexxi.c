@@ -32,6 +32,13 @@ char check_next(FILE *const fp, char *next, char *ch)
     return innext;
 }
 
+
+
+void lex_on_em( FILE *fpI){
+return;
+}
+
+
 int main()
 {
 
@@ -47,12 +54,13 @@ int main()
     int position = 1;
     char kind[2][4] = {{"ID"}, {"NUM"}};
 
+    //char *in = "ex/nonsense.txt";
     char *in = "ex/euclid.txt";
     char *out = "lexemeTable.txt";
 
     fpI = fopen(in, "rb+");   
 
-    
+
     fpO = fopen(out, "a+");
     c = fgetc(fpI);
 
@@ -70,6 +78,10 @@ int main()
                 c = fgetc(fpI);
             }
         }
+
+
+
+        
 
         if (isalpha(c))
         {
@@ -103,34 +115,13 @@ int main()
         {
             buffy[j++] = c;
         }
-        else if ((isblank(c) || c == '\n') && (j != 0))
-        {
-            buffy[j] = '\0';
-            j = 0;
 
-            if (isKeyword(buffy) == 1)
-            {
-                printf("line %d position %d: kind: %s \n", line, position - strlen(buffy), buffy);
-                memset(buffy, 0, strlen(buffy));
-            }
-           
-        }
 
         if (isdigit(c))
         {
             buffy[j++] = c;
         }
-        else if ((isblank(c) || c == '\n') && (j != 0))
-        {
-            buffy[j] = '\0';
-            j = 0;
 
-            if (isdigit(buffy[0]))
-            {
-                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
-                memset(buffy, 0, strlen(buffy));
-            }
-        }
 
         // lines and position  
 
@@ -151,7 +142,7 @@ int main()
         c = fgetc(fpI);
     }
 
-    printf("%s\n", buffy);
+    printf("EOF");
     fclose(fpI);
     fclose(fpO);
 
