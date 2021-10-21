@@ -32,95 +32,92 @@ char check_next(FILE *const fp, char *next, char *ch)
     return innext;
 }
 
-void lex_on_em(FILE *fpI)
-{
-    return;
-}
-
-int main()
+void lex_on_em(FILE *fp)
 {
 
-    FILE *fpI;
-    FILE *fpO;
-
-    char c, n;
-
-    char buffy[10];
-
-    int i, j = 0;
-    int line = 1;
-    int position = 1;
-    char kind[2][4] = {{"ID"}, {"NUM"}};
-
-    char *in = "ex/nonsense.txt";
-    // char *in = "ex/euclid.txt";
-    char *out = "lexemeTable.txt";
-
-    fpI = fopen(in, "rb+");
-
-    fpO = fopen(out, "a+");
-    c = fgetc(fpI);
-
+   
     const char ws[4] = {0x09, 0x0A, 0x0D, 0x0F};
+  
+     char c, n,buffy[9];
+    int i, j = 0,line = 1,position = 1;
+   
+    char kind[2][4] = {{"ID"}, {"NUM"}};
+    FILE *fpO;
+    char *out = "lexemeTable.txt";
+    fpO = fopen(out, "a+");
+    c = fgetc(fp);
 
     while (c != EOF)
 
     {
 
-        if (c == '/' && check_next(fpI, &n, &c) == '/')
+        if (c == '/' && check_next(fp, &n, &c) == '/')
         {
             while (c != '\n')
             {
-                c = fgetc(fpI);
+                c = fgetc(fp);
             }
         }
 
-         if (c == ':' && check_next(fpI, &n, &c) == '=')
+        if (c == ':' && check_next(fp, &n, &c) == '=')
         {
             buffy[0] = c;
-            buffy[1] = fgetc(fpI);
+            buffy[1] = fgetc(fp);
             buffy[2] = '\0';
             j = 0;
 
             if (isKeyword(buffy) == 1)
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
-            c = fgetc(fpI);
+                c = fgetc(fp);
             }
-
         }
 
-        if (c == '!' && (check_next(fpI, &n, &c) == '='))
+        if (c == '!' && (check_next(fp, &n, &c) == '='))
         {
             buffy[0] = c;
-            buffy[1] = fgetc(fpI);
+            buffy[1] = fgetc(fp);
             buffy[2] = '\0';
             j = 0;
 
             if (isKeyword(buffy) == 1)
             {
                 printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
-             
+                c = fgetc(fp);
             }
         }
+        if (c == '>' && (check_next(fp, &n, &c) == '='))
+        {
+            buffy[0] = c;
+            buffy[1] = fgetc(fp);
+            buffy[2] = '\0';
+            j = 0;
 
+            if (isKeyword(buffy) == 1)
+            {
+                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+                c = fgetc(fp);
+            }
+        }
+        if (c == '<' && (check_next(fp, &n, &c) == '='))
+        {
+            buffy[0] = c;
+            buffy[1] = fgetc(fp);
+            buffy[2] = '\0';
+            j = 0;
 
-
-
-
-
-
-
-
-
-
-
+            if (isKeyword(buffy) == 1)
+            {
+                printf("line %d position %d:  kind: %s Value: %s \n", line, position - strlen(buffy), kind[1], buffy);
+                c = fgetc(fp);
+            }
+        }
 
         if (isalpha(c))
         {
             buffy[j++] = c;
         }
-        else if ((isblank(c) || c == '\n' || c == ':' || c == '(' || c == ';' || c == ')' || c == '=' || c == '+' || c == '_') && (j != 0))
+        else if ((isblank(c) || c == '\n' || c == ':' || c == '(' || c == ';' || c == ')' || c == '*' || c == '=' || c == '+' || c == '_' || c == '-' || c == '/' || c == '_') && (j != 0))
         {
             buffy[j] = '\0';
             j = 0;
@@ -178,12 +175,28 @@ int main()
             position++;
         }
 
-        c = fgetc(fpI);
+        c = fgetc(fp);
     }
 
     printf("EOF");
-    fclose(fpI);
+
     fclose(fpO);
+
+    return;
+}
+
+int main()
+{
+
+    FILE *fpI;
+
+    char *in = "ex/nonsense.txt";
+    // char *in = "ex/euclid.txt";
+    fpI = fopen(in, "rb+");
+
+    lex_on_em(fpI);
+
+    fclose(fpI);
 
     return 0;
 }
