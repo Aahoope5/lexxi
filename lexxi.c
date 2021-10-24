@@ -53,15 +53,18 @@ void lex_on_em(FILE *fp)
 
     const char ws[4] = {0x09, 0x0A, 0x0D, 0x0F};
 
-    char c, n, buffy[9];
-    char out_buffy[11];
-    int i, j = 0, line = 1, position = 1;
+    char c, n, buffy[11];
+    char out_buffy[15];
+    int i, j = 0, k = 0, line = 1, position = 1;
 
     char kind[2][4] = {{"ID"}, {"NUM"}};
     FILE *fpO;
     char *out = "lexemeTable.txt";
 
-    fpO = fopen(out, "a+");
+    char **lextab;
+    lextab = (char **)malloc(sizeof(char *) + 1);
+
+    fpO = fopen(out, "w+");
     c = fgetc(fp);
 
     while (c != EOF)
@@ -82,11 +85,16 @@ void lex_on_em(FILE *fp)
             buffy[2] = '\0';
             j = 0;
             position++;
+
             if (isKeyword(buffy) == 1)
             {
 
-                printf("%d:%d:%s\n", line, position - strlen(buffy), buffy);
+               
 
+                 sprintf(out_buffy, "%d:%d:%s\n", line, position - strlen(buffy), buffy);
+                fputs(out_buffy, fpO);
+
+                printf("%d:%d:%s\n", line, position - strlen(buffy), buffy);
                 c = fgetc(fp);
                 position++;
             }
@@ -101,6 +109,12 @@ void lex_on_em(FILE *fp)
             position++;
             if (isKeyword(buffy) == 1)
             {
+               
+
+
+                 sprintf(out_buffy, "%d:%d:%s\n", line, position - strlen(buffy), buffy);
+                fputs(out_buffy, fpO);
+
                 printf("%d:%d:%s\n", line, position - strlen(buffy), buffy);
                 c = fgetc(fp);
                 position++;
@@ -116,6 +130,11 @@ void lex_on_em(FILE *fp)
             position++;
             if (isKeyword(buffy) == 1)
             {
+              
+
+                 sprintf(out_buffy, "%d:%d:%s\n", line, position - strlen(buffy), buffy);
+                fputs(out_buffy, fpO);
+
                 printf("%d:%d:%s\n", line, position - strlen(buffy), buffy);
                 c = fgetc(fp);
                 position++;
@@ -132,6 +151,12 @@ void lex_on_em(FILE *fp)
 
             if (isKeyword(buffy) == 1)
             {
+               
+
+                
+                 sprintf(out_buffy, "%d:%d:%s\n", line, position - strlen(buffy), buffy);
+                fputs(out_buffy, fpO);
+
                 printf("%d:%d:%s\n", line, position - strlen(buffy), buffy);
                 c = fgetc(fp);
                 position++;
@@ -149,16 +174,33 @@ void lex_on_em(FILE *fp)
 
             if (isKeyword(buffy) == 1)
             {
+                
+
+
+     sprintf(out_buffy, "%d:%d:%s\n", line, position - strlen(buffy), buffy);
+                fputs(out_buffy, fpO);
                 printf("%d:%d:%s\n", line, position - strlen(buffy), buffy);
                 memset(buffy, 0, strlen(buffy));
             }
             else if (isdigit(buffy[0]))
             {
+              
+
+                
+                 sprintf(out_buffy, "%d:%d:%s:%s\n", line, position - strlen(buffy), kind[1], buffy);
+                fputs(out_buffy, fpO);
+
                 printf("%d:%d:%s:%s\n", line, position - strlen(buffy), kind[1], buffy);
                 memset(buffy, 0, strlen(buffy));
             }
             else if (isalpha(buffy[0]))
             {
+          
+
+
+                 sprintf(out_buffy,"%d:%d:%s:%s\n", line, position - strlen(buffy), kind[0], buffy);
+                fputs(out_buffy, fpO);
+
                 printf("%d:%d:%s:%s\n", line, position - strlen(buffy), kind[0], buffy);
                 memset(buffy, 0, strlen(buffy));
             }
@@ -169,6 +211,7 @@ void lex_on_em(FILE *fp)
                 {
                     printf("Not recognized! line %d: position %d:   %s \n", line, position, buffy);
                     memset(buffy, 0, strlen(buffy));
+                    return;
                 }
             }
         }
@@ -200,17 +243,19 @@ void lex_on_em(FILE *fp)
     }
 
     printf("EOF");
-
+    sprintf(out_buffy, "EOF");
+    fputs(out_buffy, fpO);
     fclose(fpO);
 
+   free(lextab);
     return;
 }
 
 int main()
 {
 
-    // char *in = "ex/nonsense.txt";
-    char *in = "ex/euclid.txt";
+    char *in = "ex/nonsense.txt";
+  //  char *in = "ex/euclid.txt";
 
     FILE *fpI;
     fpI = fopen(in, "rb+");
